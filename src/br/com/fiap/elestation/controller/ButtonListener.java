@@ -10,11 +10,14 @@ import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
+import br.com.fiap.elestation.dao.StationDao;
 import br.com.fiap.elestation.model.Station;
+import br.com.fiap.elestation.utils.StateEnum;
 import br.com.fiap.elestation.view.Window;
 
 public class ButtonListener implements ActionListener {
 	private Window view;
+	StationDao dao = new StationDao();
 
 	public ButtonListener(Window view) {
 		this.view = view;
@@ -28,11 +31,15 @@ public class ButtonListener implements ActionListener {
 			station.setStreet(view.getTxtStreet().getText());
 			station.setDistrict(view.getTxtDistrict().getText());
 			station.setCity(view.getTxtCity().getText());
-			station.setState(view.getTxtState().getText());
+			station.setState(StateEnum.valueOf(view.getComboState().getSelectedItem().toString()));
 			station.setScore(view.getScore());
 			station.setPlugs(manageCheckedCheckboxes(view.getRegistryPanel()));
 			station.setPrice(Float.valueOf(view.getTxtPrice().getText().toString()));
-			System.out.println(station);
+			
+			dao.insert(station);
+			
+			view.loadData();
+			
 
 		} catch (Exception msg) {
 			JOptionPane.showMessageDialog(null, "Por favor, verifique se os dados estão corretos", "Erro!",

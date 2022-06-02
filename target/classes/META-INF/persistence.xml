@@ -5,6 +5,7 @@
   version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
 
   <persistence-unit name="elestation" transaction-type="RESOURCE_LOCAL">
+  <class>br.com.fiap.elestation.model.Station</class>
     <properties>
       <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
       <property name="javax.persistence.jdbc.url"    value="jdbc:h2:mem:elestation" />
@@ -12,7 +13,7 @@
       <property name="javax.persistence.jdbc.password" value="" />
 
       <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-      <property name="hibernate.hbm2ddl.auto" value="create-drop" />
+      <property name="hibernate.hbm2ddl.auto" value="update" />
       <property name="show_sql" value="true"/>
     </properties>
   </persistence-unit>

@@ -3,15 +3,24 @@ package br.com.fiap.elestation.model;
 import java.util.List;
 import java.util.Vector;
 
-public class Station {
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
+import br.com.fiap.elestation.utils.StateEnum;
+@Entity
+public class Station {
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
 	private String street;
 	private String district;
 	private String city;
-	private String state;
-	private Float score;
+	private StateEnum state;
+	private Integer score;
+	@ElementCollection
 	private List<String> plugs; // { "Type1", "Type2", "css2", "CHAdeMO" };
 	private Float price;
 
@@ -19,7 +28,7 @@ public class Station {
 
 	}
 
-	public Station(String name, String street, String district, String city, String state, Float score,
+	public Station(String name, String street, String district, String city, StateEnum state, Integer score,
 			List<String> plugs, Float price) {
 		this.name = name;
 		this.street = street;
@@ -29,6 +38,10 @@ public class Station {
 		this.score = score;
 		this.plugs = plugs;
 		this.price = price;
+	}
+	
+	public long getId() {
+		return id;
 	}
 
 	public String getName() {
@@ -63,11 +76,11 @@ public class Station {
 		this.city = city;
 	}
 
-	public String getState() {
+	public StateEnum getState() {
 		return state;
 	}
 
-	public void setState(String state) {
+	public void setState(StateEnum state) {
 		this.state = state;
 	}
 
@@ -91,7 +104,7 @@ public class Station {
 		return score;
 	}
 
-	public void setScore(Float score) {
+	public void setScore(Integer score) {
 		this.score = score;
 	}
 
@@ -109,7 +122,7 @@ public class Station {
 		data.add(street);
 		data.add(district);
 		data.add(city);
-		data.add(state);
+		data.add(state.toString());
 		data.add(score.toString());
 		data.add(plugs.toString());
 		data.add(price.toString());

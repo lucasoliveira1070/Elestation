@@ -1,12 +1,15 @@
 package br.com.fiap.elestation.view;
 
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,7 +19,11 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import br.com.fiap.elestation.controller.ButtonListener;
+import br.com.fiap.elestation.controller.StarListener;
 import br.com.fiap.elestation.controller.TableListener;
+import br.com.fiap.elestation.dao.StationDao;
+import br.com.fiap.elestation.model.Station;
+import br.com.fiap.elestation.utils.StateEnum;
 
 public class Window extends JFrame {
 
@@ -29,16 +36,16 @@ public class Window extends JFrame {
 	private JTextField txtStreet = new JTextField(50);
 	private JTextField txtDistrict = new JTextField(40);
 	private JTextField txtCity = new JTextField(30);
-	private JTextField txtState = new JTextField(30);
+	private JComboBox<StateEnum> comboState = new JComboBox<StateEnum>(StateEnum.values());
 	private JTextField txtPrice = new JTextField(20);
 	private JButton btnSave = new JButton("Salvar");
 
 	StarRater starRater = new StarRater();
-	float score;
+	Integer score;
 	private String[] plugType = { "Type1", "Type2", "css2", "CHAdeMO" };
 	private List<String> avaiblePlugs = new ArrayList<String>();
 
-	String[] columns = { "Nome", "Endereço", "Avaliação", "Tipo de Plug", "Preço kWh" };
+	String[] columns = { "id", "Nome", "Rua", "Bairro", "Cidade", "Estado", "Avaliação", "Tipo de Plug", "Preço kWh" };
 	DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
 	JTable table = new JTable(tableModel);
 
@@ -49,6 +56,13 @@ public class Window extends JFrame {
 	}
 
 	public void init() {
+		this.setTitle("Elestation");
+		ImageIcon img = new ImageIcon("src/logo.jpg");
+		this.setIconImage(img.getImage());
+		this.setLocationRelativeTo(null);
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage("src/logo.jpg"));
+		this.setResizable(false);
+
 		starRater.addMouseListener(null);
 		registryPanel.add(new JLabel("Nome"));
 		registryPanel.add(txtName);
@@ -59,11 +73,12 @@ public class Window extends JFrame {
 		registryPanel.add(new JLabel("Cidade"));
 		registryPanel.add(txtCity);
 		registryPanel.add(new JLabel("Estado"));
-		registryPanel.add(txtState);
+		registryPanel.add(comboState);
 		registryPanel.add(new JLabel("Preço kWh"));
 		registryPanel.add(txtPrice);
-
 		registryPanel.add(starRater);
+
+		
 
 		for (int i = 0; i < plugType.length; i++) {
 			registryPanel.add(new JCheckBox(plugType[i]));
@@ -71,9 +86,11 @@ public class Window extends JFrame {
 
 		registryPanel.add(btnSave);
 		registryPanel.setLayout(new BoxLayout(registryPanel, BoxLayout.Y_AXIS));
-		TableListener tableListener = new TableListener();
+		TableListener tableListener = new TableListener(this);
 		table.addMouseListener(tableListener);
 		table.setDefaultEditor(Object.class, null);
+		StarListener starListener = new StarListener(this);
+		starRater.addStarListener(starListener);
 
 		queryPanel.add(new JScrollPane(table));
 		this.setLayout(new FlowLayout());
@@ -83,6 +100,18 @@ public class Window extends JFrame {
 		ButtonListener listener = new ButtonListener(this);
 		btnSave.addActionListener(listener);
 		setVisible(true);
+	}
+
+	public void loadData() {
+		tableModel.setRowCount(0);
+		List<Station> lista = new StationDao().listAll();
+		lista.forEach(station -> tableModel.addRow(station.getData()));
+	}
+
+	public void loadDataByState() {
+		tableModel.setRowCount(0);
+		List<Station> lista = new StationDao().listByState();
+		lista.forEach(station -> tableModel.addRow(station.getData()));
 	}
 
 	public JTextField getTxtName() {
@@ -101,8 +130,8 @@ public class Window extends JFrame {
 		return txtCity;
 	}
 
-	public JTextField getTxtState() {
-		return txtState;
+	public JComboBox<StateEnum> getComboState() {
+		return comboState;
 	}
 
 	public JTextField getTxtPrice() {
@@ -125,8 +154,12 @@ public class Window extends JFrame {
 		return registryPanel;
 	}
 
-	public float getScore() {
+	public Integer getScore() {
 		return score;
+	}
+	
+	public void setScore(Integer score) {
+		this.score = score;
 	}
 
 }
